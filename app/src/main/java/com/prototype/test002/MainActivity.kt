@@ -4,27 +4,65 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.*
+import java.io.*
+import java.net.InetSocketAddress
+import java.net.Socket
+import java.net.SocketAddress
+import java.util.*
+import kotlin.math.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val myVM: MyViewModel by viewModels()
+        val model: MyViewModel by viewModels()
+
 
         setContent {
-            myVM.onMessageChange("Hello")
+            println("View Model Created: ${model}")
         }
     }
 }
 
 
-class MyViewModel(
-    var message: String,
-): ViewModel() {
+class MyViewModel : ViewModel() {
+    var message by mutableStateOf("")
+        private set
+
+    // TCP Socket variables
+    var host = "10.0.1.2" // Linux PC IP Address
+    var port = 53985 // Linux forwarded port on router
 
     init {
-        message = ""
+        println("VM Initialize")
+        val socket = Socket()
+
+        tcpConnect(socket)
+
+    }
+
+    private fun tcpConnect(socket: Socket) {
+        // Do an asynchronous operation
+        val socketAddress: SocketAddress = InetSocketAddress(host, port)
+        println("Socket Address: " + socketAddress.toString())
+
+        try {
+            socket.bind(socketAddress)
+            println("A")
+            socket.connect((InetSocketAddress(host, port)), 5000)
+            println("B")
+            println("Client Socket : " + socket.isConnected)
+        }
+        catch (e: IOException) {
+            //catch logic
+            println("Connection Unsuccessful")
+        }
+
     }
 
     fun onMessageChange(newMessage: String) {
@@ -32,4 +70,3 @@ class MyViewModel(
         println("ViewModel Updated: $message")
     }
 }
-
