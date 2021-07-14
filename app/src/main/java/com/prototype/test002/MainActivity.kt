@@ -39,8 +39,8 @@ class MyViewModel : ViewModel() {
         private set
 
     // TCP Socket variables
-    var host = "10.0.1.2" // Linux PC IP Address
-    var port = 53985 // Linux forwarded port on router
+    var host = "10.0.1.2"
+    var port = 53985
 
     init {
         println("VM Initialize")
