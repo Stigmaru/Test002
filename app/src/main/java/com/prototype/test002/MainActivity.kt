@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 import java.io.*
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -16,12 +17,15 @@ import java.net.SocketAddress
 import java.util.*
 import kotlin.math.*
 
+// TCP Socket variables
+var host = "10.0.1.2" // Linux PC IP Address
+var port = 53985 // Linux forwarded port on router
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val model: MyViewModel by viewModels()
-
 
         setContent {
             println("View Model Created: ${model}")
@@ -41,28 +45,22 @@ class MyViewModel : ViewModel() {
     init {
         println("VM Initialize")
         val socket = Socket()
-
         tcpConnect(socket)
-
     }
 
     private fun tcpConnect(socket: Socket) {
-        // Do an asynchronous operation
-        val socketAddress: SocketAddress = InetSocketAddress(host, port)
-        println("Socket Address: " + socketAddress.toString())
+        //val socketAddress: SocketAddress = InetSocketAddress(host, port)
+        //println("Socket Address: " + socketAddress.toString())
 
         try {
-            socket.bind(socketAddress)
-            println("A")
+            socket.bind(null)
             socket.connect((InetSocketAddress(host, port)), 5000)
-            println("B")
             println("Client Socket : " + socket.isConnected)
         }
         catch (e: IOException) {
             //catch logic
             println("Connection Unsuccessful")
         }
-
     }
 
     fun onMessageChange(newMessage: String) {
